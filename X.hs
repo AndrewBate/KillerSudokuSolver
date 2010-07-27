@@ -24,14 +24,14 @@ solve (rows,cols) solAcc
     | otherwise                  = do 
   let col = minimumBy (compare `on` S.size) $ M.elems cols -- the selected colum
   row <- S.elems col                -- the selected row
-  let newgrid = selectRow (rows,cols) row
+  let newgrid = select_row (rows,cols) row
   solve newgrid (row:solAcc)
 
 
-selectRow :: Grid ->  -- | the grid we select the row of
+select_row :: Grid ->  -- | the grid we select the row of
              Int -> -- | the row index to select
              Grid
-selectRow (rows,cols) row =
+select_row (rows,cols) row =
   let remCols = S.elems $ rows !row -- the colums that this row eliminates
       -- the rows that this colum elminates
       remRows = concatMap (\col -> S.elems $ cols ! col) remCols  in
@@ -53,6 +53,7 @@ remove_rows_and_cols grid rows cols =
     let rows_removed = foldl remove_row grid rows
         cols_removed = foldl remove_col rows_removed cols in
     cols_removed
+
 
 make_grid :: [(Int,Int)] -> Grid
 make_grid positions =

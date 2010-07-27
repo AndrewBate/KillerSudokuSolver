@@ -14,46 +14,46 @@ main = do
   window <- windowNew
   
   
-  killerBoxes <- newIORef ([] :: [KillerBox])
+  killer_boxes <- newIORef ([] :: [KillerBox])
             
   set window [ windowTitle := "Sudoku Solver"
              , containerBorderWidth := 20
              ]
 
-  sudokuGrid <- tableNew 9 9 True
-  toggleButtons<- mapM (\(r,c) -> do
+  sudoku_grid <- tableNew 9 9 True
+  toggle_buttons<- mapM (\(r,c) -> do
                          button <- toggleButtonNew
-                         tableAttachDefaults sudokuGrid button (r-1) r (c-1) c
+                         tableAttachDefaults sudoku_grid button (r-1) r (c-1) c
                          return ((r,c),button) ) $ range ((1,1) ,(9,9))
   
-  numberSetting <- vBoxNew False 10
-  numberEntry <- entryNew
+  number_setting <- vBoxNew False 10
+  number_entry <- entryNew
 
-  numberAccept <- buttonNewWithLabel "add box"
-  onClicked numberAccept $ do
-         n <- fmap read (entryGetText numberEntry)
-         (cells,activeButtons) <- bstate toggleButtons
-         modifyIORef killerBoxes ((KillerBox n cells):)
-         soFar <- fmap length $ readIORef killerBoxes
+  number_accept <- buttonNewWithLabel "add box"
+  onClicked number_accept $ do
+         n <- fmap read (entryGetText number_entry)
+         (cells,activeButtons) <- bstate toggle_buttons
+         modifyIORef killer_boxes ((KillerBox n cells):)
+         box_number <- fmap length $ readIORef killer_boxes
          mapM_ (\tb -> do 
                   toggleButtonSetActive tb False
-                  buttonSetLabel tb $ show (n,soFar) ) activeButtons
+                  buttonSetLabel tb $ show (n,box_number) ) activeButtons
                          
 
-  solveButton <- buttonNewWithLabel "solve"
-  onClicked solveButton $ do
-         boxes <- readIORef killerBoxes
-         let (soln:_) = solveKiller boxes
-         zipWithM_ (\(p1,n) (p2,button) -> buttonSetLabel button (show n)) soln toggleButtons 
+  solve_button <- buttonNewWithLabel "solve"
+  onClicked solve_button $ do
+         boxes <- readIORef killer_boxes
+         let (soln:_) = solve_killer boxes
+         zipWithM_ (\(p1,n) (p2,button) -> buttonSetLabel button (show n)) soln toggle_buttons 
 
 
-  append numberSetting numberEntry
-  append numberSetting numberAccept
-  append numberSetting solveButton
+  append number_setting number_entry
+  append number_setting number_accept
+  append number_setting solve_button
 
   hbox <- hBoxNew False 20
-  append hbox sudokuGrid
-  append hbox numberSetting
+  append hbox sudoku_grid
+  append hbox number_setting
   
   containerAdd window hbox
   widgetShowAll window
