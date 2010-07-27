@@ -1,0 +1,4 @@
+
+
+compile with:
+ghc --make KillerGUI.hs 
