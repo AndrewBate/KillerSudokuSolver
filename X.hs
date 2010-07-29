@@ -33,7 +33,7 @@ select_row :: Grid ->  -- | the grid we select the row of
              Grid
 select_row (rows,cols) row =
   let remCols = S.elems $ rows !row -- the colums that this row eliminates
-      -- the rows that this colum elminates
+      -- the rows that these columns elminae
       remRows = concatMap (\col -> S.elems $ cols ! col) remCols  in
   remove_rows_and_cols (rows,cols) remRows remCols
 

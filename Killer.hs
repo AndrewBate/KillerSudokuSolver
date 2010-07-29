@@ -1,7 +1,5 @@
 module Killer ( KillerBox (..),
                 solve_killer) where
-    
-
 import X
 import Data.List (delete,sort)
 import Control.Monad (guard)
@@ -13,8 +11,6 @@ sum_perms rem_sum n l = do
   guard $ rem_sum - sel >= 0 
   sels <- sum_perms (rem_sum - sel) (n-1) (delete sel l)
   return (sel:sels)
-
-
 
 data KillerBox = KillerBox { total :: Int
                            , cells :: [(Int,Int)] }
