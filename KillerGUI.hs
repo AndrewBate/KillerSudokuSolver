@@ -5,6 +5,7 @@ import Data.Array
 import Control.Concurrent
 import Control.Monad
 import Data.IORef
+import System.IO.Unsafe
 import Killer
 
 
@@ -31,13 +32,15 @@ main = do
 
   number_accept <- buttonNewWithLabel "add box"
   onClicked number_accept $ do
-         n <- fmap read (entryGetText number_entry)
-         (cells,activeButtons) <- bstate toggle_buttons
-         modifyIORef killer_boxes ((KillerBox n cells):)
-         box_number <- fmap length $ readIORef killer_boxes
-         mapM_ (\tb -> do 
-                  toggleButtonSetActive tb False
-                  buttonSetLabel tb $ show (n,box_number) ) activeButtons
+         num <- fmap maybe_read (entryGetText number_entry)
+         case num of
+           Nothing -> return ()
+           Just n -> do (cells,activeButtons) <- bstate toggle_buttons
+                        modifyIORef killer_boxes ((KillerBox n cells):)
+                        box_number <- fmap length $ readIORef killer_boxes
+                        mapM_ (\tb -> do 
+                                 toggleButtonSetActive tb False
+                                 buttonSetLabel tb $ show (n,box_number) ) activeButtons
                          
 
   solve_button <- buttonNewWithLabel "solve"
@@ -46,10 +49,16 @@ main = do
          let (soln:_) = solve_killer boxes
          zipWithM_ (\(p1,n) (p2,button) -> buttonSetLabel button (show n)) soln toggle_buttons 
 
+  reset_button <- buttonNewWithLabel "reset"
+  onClicked reset_button $ do
+         writeIORef killer_boxes []
+         mapM_ (\(_,but) -> buttonSetLabel but "") toggle_buttons
+
 
   append number_setting number_entry
   append number_setting number_accept
   append number_setting solve_button
+  append number_setting reset_button
 
   hbox <- hBoxNew False 20
   append hbox sudoku_grid
@@ -64,6 +73,9 @@ main = do
 append box thing = boxPackStart box thing PackGrow 0
 
 bstate buttons = fmap unzip (filterM (toggleButtonGetActive . snd) buttons)
-                  
+           
 
+
+maybe_read :: (Read a) => String -> Maybe a
+maybe_read str= unsafePerformIO $ catch (fmap Just $ readIO str) (return . (const Nothing)) 
     
