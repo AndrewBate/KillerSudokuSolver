@@ -1,12 +1,10 @@
 
 
 import Graphics.UI.Gtk
-import Data.Array
-import Control.Concurrent
+import Data.Ix(range)
 import Control.Monad
 import Data.IORef
-import System.IO.Unsafe
-import Killer
+import Killer(KillerBox(KillerBox), solve_killer, KillerBox)
 
 
 main :: IO ()
@@ -20,7 +18,6 @@ main = do
   set window [ windowTitle := "Sudoku Solver"
              , containerBorderWidth := 20
              ]
-
   sudoku_grid <- tableNew 9 9 True
   toggle_buttons<- mapM (\(r,c) -> do
                          button <- toggleButtonNew
@@ -74,8 +71,8 @@ append box thing = boxPackStart box thing PackGrow 0
 
 bstate buttons = fmap unzip (filterM (toggleButtonGetActive . snd) buttons)
            
-
-
 maybe_read :: (Read a) => String -> Maybe a
-maybe_read str= unsafePerformIO $ catch (fmap Just $ readIO str) (return . (const Nothing)) 
+maybe_read str = case reads str of
+                   [(v,"")] -> Just v
+                   _        -> Nothing
     

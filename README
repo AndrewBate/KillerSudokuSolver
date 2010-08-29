@@ -2,3 +2,12 @@
 
 compile with:
 ghc --make KillerGUI.hs 
+
+A simple killer sudoku solver,
+
+Select a box with the toggle buttons and enter its total
+
+Incorrectly entered boxes do not usually matter matter, provided that correct
+boxes are then entered and there are no valid solutions using the incorrect
+boxes.
+

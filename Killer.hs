@@ -1,6 +1,6 @@
 module Killer ( KillerBox (..),
                 solve_killer) where
-import X
+import X(make_grid ,solve ,Grid)
 import Data.List (delete,sort)
 import Control.Monad (guard)
 

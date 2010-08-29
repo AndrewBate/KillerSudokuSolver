@@ -4,7 +4,7 @@ import qualified Data.IntMap as M
 import Data.IntMap ((!),IntMap)
 import qualified Data.IntSet as S
 import Data.IntSet (IntSet)
-import Data.List
+import Data.List (minimumBy)
 import Data.Function (on)
 
 type Rows = IntMap IntSet
@@ -22,10 +22,10 @@ solve (rows,cols) solAcc
     | M.null cols                = return solAcc
     | any S.null  $ M.elems cols = fail ""
     | otherwise                  = do 
-  let col = minimumBy (compare `on` S.size) $ M.elems cols -- the selected colum
-  row <- S.elems col                -- the selected row
-  let newgrid = select_row (rows,cols) row
-  solve newgrid (row:solAcc)
+          let col = minimumBy (compare `on` S.size) $ M.elems cols -- the selected colum
+          row <- S.elems col                -- the selected row
+          let newgrid = select_row (rows,cols) row
+          solve newgrid (row:solAcc)
 
 
 select_row :: Grid ->  -- | the grid we select the row of
