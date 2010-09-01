@@ -1,19 +1,23 @@
 
-module X where
+module X (Grid(..),solve,make_grid) where
 import qualified Data.IntMap as M
 import Data.IntMap ((!),IntMap)
 import qualified Data.IntSet as S
 import Data.IntSet (IntSet)
 import Data.List (minimumBy)
 import Data.Function (on)
+import Control.Monad.State
 
 type Rows = IntMap IntSet
 type Cols = IntMap IntSet
 
+-- Grid - a set of intersections where each intersection represents a 1 in a
+-- sparse binary matrix
 type Grid = (Rows,Cols)
 
 
--- Algorithm x
+-- Algorithm x to solve exact cover problem
+-- (select a set of rows such that each column has exactly one 1 in it)
 -- empty cols = success
 -- empty rows = FAIL
 
@@ -31,29 +35,27 @@ solve (rows,cols) solAcc
 select_row :: Grid ->  -- | the grid we select the row of
              Int -> -- | the row index to select
              Grid
-select_row (rows,cols) row =
-  let remCols = S.elems $ rows !row -- the colums that this row eliminates
-      -- the rows that these columns elminae
-      remRows = concatMap (\col -> S.elems $ cols ! col) remCols  in
-  remove_rows_and_cols (rows,cols) remRows remCols
+select_row grid@(rows,cols) row =
+    let rem_cols = S.elems $ rows !row -- the colums that this row eliminates
+                                       -- (colums this row sets)
+        -- the rows that these columns elminate (other rows that would also set
+        -- this column)
+        rem_rows = concatMap (\col -> S.elems $ cols ! col) rem_cols  in
+    execState (do
+        mapM_ (modify . remove_row) rem_rows
+        mapM_ (modify . remove_col) rem_cols) grid
 
-remove_row, remove_col :: Grid -> Int -> Grid
-remove_row (rows,cols) rn =
+
+remove_row, remove_col :: Int -> Grid -> Grid
+remove_row rn (rows,cols) =
     let rows' = M.delete rn rows
         cols' = fmap (S.delete rn) cols
     in (rows',cols')
 
-remove_col (rows,cols) cn =
+remove_col cn (rows,cols) =
     let cols' = M.delete cn cols
         rows' = fmap (S.delete cn) rows
     in (rows',cols')
-
-remove_rows_and_cols :: Grid -> [Int] -> [Int] -> Grid
-remove_rows_and_cols grid rows cols =
-    let rows_removed = foldl remove_row grid rows
-        cols_removed = foldl remove_col rows_removed cols in
-    cols_removed
-
 
 make_grid :: [(Int,Int)] -> Grid
 make_grid positions =
