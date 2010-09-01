@@ -18,10 +18,10 @@ type Grid = (Rows,Cols)
 -- empty rows = FAIL
 
 solve :: Grid -> [Int] -> [[Int]]
-solve (rows,cols) solAcc   
+solve (rows,cols) solAcc
     | M.null cols                = return solAcc
     | any S.null  $ M.elems cols = fail ""
-    | otherwise                  = do 
+    | otherwise                  = do
           let col = minimumBy (compare `on` S.size) $ M.elems cols -- the selected colum
           row <- S.elems col                -- the selected row
           let newgrid = select_row (rows,cols) row
@@ -40,7 +40,7 @@ select_row (rows,cols) row =
 remove_row, remove_col :: Grid -> Int -> Grid
 remove_row (rows,cols) rn =
     let rows' = M.delete rn rows
-        cols' = fmap (S.delete rn) cols 
+        cols' = fmap (S.delete rn) cols
     in (rows',cols')
 
 remove_col (rows,cols) cn =
@@ -58,10 +58,10 @@ remove_rows_and_cols grid rows cols =
 make_grid :: [(Int,Int)] -> Grid
 make_grid positions =
     add_to_grid (M.empty,M.empty) positions
- 
+
 add_to_grid :: Grid -> [(Int,Int)] -> Grid
 add_to_grid grid [] = grid
-add_to_grid (rows,cols) ((r,c):rcs) = 
+add_to_grid (rows,cols) ((r,c):rcs) =
     add_to_grid (add rows r c, add cols c r) rcs
 
 add :: IntMap IntSet -> Int -> Int -> IntMap IntSet

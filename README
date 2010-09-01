@@ -1,7 +1,7 @@
 
 
 compile with:
-ghc --make KillerGUI.hs 
+ghc --make KillerGUI.hs
 
 A simple killer sudoku solver,
 

@@ -8,7 +8,7 @@ sum_perms :: (Num t, Num a, Ord a) => a -> t -> [a] -> [[a]]
 sum_perms 0 0 _ = return []
 sum_perms rem_sum n l = do
   sel <- l
-  guard $ rem_sum - sel >= 0 
+  guard $ rem_sum - sel >= 0
   sels <- sum_perms (rem_sum - sel) (n-1) (delete sel l)
   return (sel:sels)
 
@@ -18,8 +18,8 @@ data KillerBox = KillerBox { total :: Int
 make_x_rows :: KillerBox -> [([((Int,Int),Int)], -- The cell numbering in the XRow
                             [Int] ) ] -- The colum numbers in this row
 make_x_rows box =
-    let perms = sum_perms (total box) (length $ cells box) [1..9] 
-        matched = map (zip $ cells box) perms 
+    let perms = sum_perms (total box) (length $ cells box) [1..9]
+        matched = map (zip $ cells box) perms
         x_rows = map (concatMap (\((rows',cols'),nums') ->
                                     let rows = rows' - 1
                                         cols = cols' - 1
@@ -28,14 +28,14 @@ make_x_rows box =
                                     [      9 * cols + rows
                                     -- each number in every column
                                     ,81  + 9 * cols + nums
-                                    -- each number in every row 
+                                    -- each number in every row
                                     ,162 + 9 * rows + nums
                                     -- each number in every box
                                     ,243 + 9 * (3 * (cols `div` 3) + rows `div` 3) + nums ] )) matched
-                                              
+
     in
       zip matched x_rows
-       
+
 make_killer :: [KillerBox] -> (Grid,[[((Int,Int),Int)]])
 make_killer boxes =
     let (cell_contents,xrows) = unzip $ concatMap make_x_rows boxes
