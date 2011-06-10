@@ -1,5 +1,5 @@
 
-module X (Grid(..),solve,make_grid) where
+module X (Grid(..),solve,make_grid,select_row) where
 import qualified Data.IntMap as M
 import Data.IntMap ((!),IntMap)
 import qualified Data.IntSet as S
